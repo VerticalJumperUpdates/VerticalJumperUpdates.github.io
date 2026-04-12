@@ -1941,7 +1941,7 @@ function render(){
     });
 }
 
-// --- SETUP LISTENERS ---
+/* -------------------- SETUP LISTENERS -------------------- */
 document.getElementById('startBtn').addEventListener('click', () => { startRun(); document.getElementById('menu').style.display = 'none'; });
 document.getElementById('multiplayerBtn').addEventListener('click', () => {
     state.multiplayer = !state.multiplayer;
@@ -1949,26 +1949,17 @@ document.getElementById('multiplayerBtn').addEventListener('click', () => {
     btn.innerText = state.multiplayer ? "2 Spieler: AN" : "2 Spieler: AUS";
     btn.style.background = state.multiplayer ? "#ff9800" : "#555";
 });
-document.getElementById('lavaModeBtn').addEventListener('click', () => {
-    lavaRunActive = !lavaRunActive;
-    document.getElementById('lavaModeBtn').innerText = "Lava-Modus: " + (lavaRunActive ? "AN" : "AUS");
-    document.body.classList.toggle('lava-bg', lavaRunActive);
-    updateCoinUI();
-});
 document.getElementById('resetBtn').addEventListener('click', () => {
   if (confirm('Willst du wirklich ALLES zurücksetzen?')) { localStorage.clear(); location.reload(); }
 });
 
-// Challenge UI Listeners
 document.getElementById('openChallengeMenuBtn').addEventListener('click', () => { 
     document.getElementById('menu').style.display = 'none'; 
     document.getElementById('challengeModal').style.display = 'flex'; 
     if(unlockedLevels.length > 0) document.getElementById('bonusTab').style.display='block';
     renderChallengeList(); 
 });
-document.getElementById('openEditorBtn').addEventListener('click', () => {
-    startEditor();
-});
+document.getElementById('openEditorBtn').addEventListener('click', () => { startEditor(); });
 document.getElementById('closeChallengeModal').addEventListener('click', () => { document.getElementById('challengeModal').style.display = 'none'; document.getElementById('menu').style.display = 'flex'; });
 document.querySelectorAll('.challenge-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -1985,7 +1976,7 @@ function renderChallengeList(diff = 'easy') {
         const lvlId = diff + '-' + idx;
         const item = document.createElement('div');
         item.className = 'challenge-item' + (completedLevels.includes(lvlId) ? ' completed' : '');
-        item.innerHTML = `<div style="display:flex;align-items:center;"><div class="challenge-check">✓</div><div><h3>${lvl.name}</h3></div></div><button class="btn-small" style="background:var(--accent);color:#fff;border:none;padding:6px 12px;border-radius:6px;">Starten</button>`;
+        item.innerHTML = `<div style="display:flex;align-items:center;"><div class="challenge-check">✓</div><div><h3>${lvl.name}</h3><p>Level ${idx+1}</p></div></div><button class="btn-small" style="background:var(--accent);color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">Starten</button>`;
         item.addEventListener('click', () => startChallenge(lvl, lvlId));
         list.appendChild(item);
     });
