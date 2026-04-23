@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Vertical Jumper 1.14</title>
+<title>Vertical Jumper 1.16</title>
 <style>
 /* --- GRUNDEINSTELLUNGEN --- */
   :root {
@@ -1210,6 +1210,7 @@ const SKINS = [
   { id:'eisblock_png', name:'Eisblock', file:'eisblock.png', price: 3, secret:false },
   { id:'lavastein_png', name:'Lavastein', file:'lavastein.png', price: 3, secret:false },
   { id:'bigmac_png', name:'Big Mac', file:'bigmac.png', price: 1, secret:false },
+  { id:'hornet_png', name:'Hornet', file:'hornet.jpg', price: 1, secret:false },
 ];
 SKINS.unshift({ id:'dirt', name:'Dirtblock', colors:['#7a4f20','#4e2e0b'], unlock:{type:'score',value:0}, secret:false });
 
@@ -1302,7 +1303,6 @@ if (iceModeBtn) {
         updateModeButtons();
     });
 }
-
 /* -------------------- DRAWING -------------------- */
 function makeRNG(seed){ let s = seed >>> 0; return function(){ s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 function shadeColor(hex, percent){ if(!hex || hex[0] !== '#') return hex || '#888'; const f = parseInt(hex.slice(1),16); const t = percent < 0 ? 0 : 255; const p = Math.abs(percent)/100; const R = Math.round((t - (f>>16)) * p) + (f>>16); const G = Math.round((t - (f>>8 & 0x00FF)) * p) + (f>>8 & 0x00FF); const B = Math.round((t - (f & 0x0000FF)) * p) + (f & 0x0000FF); return "#" + (0x1000000 + (R<<16) + (G<<8) + B).toString(16).slice(1); }
@@ -1755,7 +1755,27 @@ function loop(now){
 }
 
 function update(dt) {
-    const accel = 2500, maxSpeed = PHYS_MOVE_SPEED, gravity = PHYS_GRAVITY, damping = PHYS_HORIZONTAL_DAMPING;
+    // --- NEU: Schneepartikel bewegen ---
+    if (iceModeActive) {
+        if (iceParticles.length < 120 && Math.random() < 0.08) {
+            iceParticles.push(createIceParticle());
+        }
+        iceParticles.forEach(p => {
+            p.y += p.speed * dt;
+            p.x += p.drift * p.speed * dt;
+            p.angle += p.spin * dt; // Rotation für Schneeflocken
+            if (p.y > state.height + 20) {
+                p.y = -20;
+                p.x = Math.random() * state.width;
+                p.opacity = Math.random() * 0.4 + 0.3;
+            }
+        });
+        iceParticles = iceParticles.filter(p => p.y < state.height + 50);
+    }
+
+    // --- NEU: Damping für rutschigen Ice-Modus anpassen ---
+    const accel = 2500, maxSpeed = PHYS_MOVE_SPEED, gravity = PHYS_GRAVITY;
+    const damping = iceModeActive ? 0.985 : PHYS_HORIZONTAL_DAMPING;
 
     state.players.forEach(p => {
         let moveLeft = false, moveRight = false;
@@ -1898,9 +1918,36 @@ function update(dt) {
 function render(){
     ctx.clearRect(0, 0, state.width, state.height);
     const bg = ctx.createLinearGradient(0, 0, 0, state.height);
-    if (lavaRunActive && !state.isChallenge) { bg.addColorStop(0, '#4a0000'); bg.addColorStop(1, '#990000'); } 
-    else { bg.addColorStop(0, '#87CEEB'); bg.addColorStop(1, '#eaf6ff'); }
+    
+    // FIX: Eis-Hintergrund Farben wieder hinzugefügt
+    if (lavaRunActive && !state.isChallenge) { 
+        bg.addColorStop(0, '#4a0000'); bg.addColorStop(1, '#990000'); 
+    } else if (iceModeActive && !state.isChallenge) {
+        bg.addColorStop(0, '#f0f8ff'); bg.addColorStop(1, '#e3f2fd');
+    } else { 
+        bg.addColorStop(0, '#87CEEB'); bg.addColorStop(1, '#eaf6ff'); 
+    }
+    
     ctx.fillStyle = bg; ctx.fillRect(0, 0, state.width, state.height);
+
+    // Schnee/Eispartikel zeichnen
+    if (iceModeActive) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+        iceParticles.forEach(p => {
+            if (p.isSnowflake) {
+                drawSnowflake(ctx, p.x, p.y, p.size, p.angle, p.opacity);
+            } else {
+                ctx.globalAlpha = p.opacity;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = "white";
+                ctx.fill();
+            }
+        });
+        ctx.globalAlpha = 1.0;
+        ctx.shadowBlur = 0;
+    }
 
     if (lavaRunActive && !state.isChallenge) {
         ctx.save(); ctx.shadowBlur = 25; ctx.shadowColor = "#ff4500"; ctx.fillStyle = "rgba(255, 69, 0, 0.95)";
@@ -1913,9 +1960,21 @@ function render(){
         }
         ctx.restore();
     }
-    for (let p of state.platforms) {
+    
+	for (let p of state.platforms) {
         ctx.save();
-        if (p.color === 'orange' && p.breakTimer > 0) ctx.globalAlpha = 1 - Math.min(1, p.breakTimer / 2);
+        
+        // Transparenz + Leuchten im Ice-Modus
+        if (iceModeActive) {
+            ctx.globalAlpha = 0.35;
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 3;
+            ctx.shadowColor = "rgba(255,255,255,0.7)";
+            ctx.shadowBlur = 8;
+        } else if (p.color === 'orange' && p.breakTimer > 0) {
+            ctx.globalAlpha = 1 - Math.min(1, p.breakTimer / 2);
+        }
+        
         let base, dark, light;
         if (p.color === "green") { base = "#3fa13f"; dark = "#2b6e2b"; light = "#74d174"; } 
         else if (p.color === "blue") { base = "#3a6ff7"; dark = "#2647a8"; light = "#7fa5ff"; } 
@@ -1927,15 +1986,33 @@ function render(){
         ctx.fillStyle = base; ctx.fillRect(p.x, p.y, p.w, p.h);
         ctx.fillStyle = dark; ctx.fillRect(p.x, p.y + p.h - 4, p.w, 4);
         ctx.fillStyle = light; ctx.fillRect(p.x, p.y, p.w, 3);
+        
+        // Weißer Rand im Ice-Modus
+        if (iceModeActive) {
+            ctx.globalAlpha = 0.9;
+            ctx.strokeRect(p.x + 1.5, p.y + 1.5, p.w - 3, p.h - 3);
+            ctx.globalAlpha = 1.0;
+        }
+        
         ctx.restore();
     }
+
+    // FIX: SPIELER WIEDER RENDERN! (Dieser Block fehlte)
     state.players.forEach(p => {
         let scaleY = 1, scaleX = 1;
         if (p.jumpAnim === 4) { scaleY = 0.87; scaleX = 1.13; } 
         else if (p.jumpAnim === 1 || p.jumpAnim === 2) { scaleY = 1.17; scaleX = 0.88; } 
+        else if (p.jumpAnim === 3) { scaleY = 1.12; scaleX = 0.9; }
+
+        const drawX = Math.round(p.x);
+        const drawY = Math.round(p.y);
+        ctx.save();
+        ctx.translate(drawX, drawY);
+        ctx.scale(scaleX, scaleY);
+    
         const skin = SKINS.find(s => s.id === p.skinId) || SKINS[0];
-        ctx.save(); ctx.translate(p.x, p.y); ctx.scale(scaleX, scaleY);
         drawPlayerBlock(ctx, p.h, skin);
+
         ctx.restore();
     });
 }
