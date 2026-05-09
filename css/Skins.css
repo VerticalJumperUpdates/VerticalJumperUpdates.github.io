@@ -1,0 +1,9 @@
+  .skin-card { border-radius: 10px; padding: 20px; background: #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.06); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 220px; cursor: pointer; transition: transform .12s, box-shadow .12s; position: relative; box-sizing: border-box; border: 1px solid #eee; }
+  .skin-card.locked { background: #f4f4f4 !important; opacity: 1 !important; filter: none !important; }
+  .skin-card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,0.12); }
+  .skin-thumb { width: 88px; height: 88px; border-radius: 8px; background-color: #ddd !important; position: relative; margin-bottom: 12px; flex-shrink: 0; display: block; border: 2px solid #999; }
+  .skin-card canvas { display: block; opacity: 1 !important; visibility: visible !important; }
+  .skin-card .coin-display { margin: 8px 0 0 0 !important; display: inline-flex; align-items: center; justify-content: center; gap: 6px; align-self: center; padding: 4px 12px; }
+  .skin-card .coin-icon { margin: 0 !important; width: 14px; height: 14px; flex-shrink: 0; }
+  .skin-attr { font-size: 11px; margin-top: 5px; padding: 2px 8px; border-radius: 10px; background: #f0f0f0; color: #555; font-weight: 600; }
+  .skin-attr.has-attr { background: #e8f0ff; color: #2a60c4; border: 1px solid #bcd0f7; }

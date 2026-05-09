@@ -1,0 +1,7 @@
+  #creditScreen { position: absolute; inset: 0; background: black; color: white; z-index: 2000; display: none; justify-content: center; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
+  #creditContent { position: absolute; top: 100%; width: 100%; text-align: center; animation: scrollCredits 30s linear forwards; }
+  .credit-section { margin: 50px 0; }
+  .credit-section h2 { color: var(--gold); letter-spacing: 3px; margin-bottom: 10px; }
+  .credit-section p { font-size: 1.2rem; margin: 5px 0; }
+  .credit-section q { font-size: 5rem; margin: 5px 0; }
+  @keyframes scrollCredits { 0% { top: 100%; } 100% { top: -150%; } }

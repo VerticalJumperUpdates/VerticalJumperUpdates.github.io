@@ -1,0 +1,18 @@
+  #allKeysOverlay {
+    position: fixed; inset: 0; z-index: 5100;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(30,30,60,0.96);
+    color: white;
+  }
+  #allKeysOverlay h1 { font-size: 2.2rem; color: #3b82f6; margin-bottom: 10px; }
+  #allKeysOverlay h2 { font-size: 1.5rem; color: var(--gold); margin-bottom: 8px; }
+  #allKeysOverlay p { font-size: 1.1rem; margin: 6px 0; color: #ddd; }
+  #allKeysOverlay .keys-row { display: flex; gap: 20px; margin: 20px 0; }
+  #allKeysOverlay .back-btn {
+    margin-top: 24px; padding: 14px 36px; font-size: 1.1rem;
+    border: none; border-radius: 12px; background: #3b82f6;
+    color: white; font-weight: 800; cursor: pointer;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+    transition: transform 0.1s;
+  }
+  #allKeysOverlay .back-btn:hover { transform: scale(1.05); }

@@ -1,0 +1,13 @@
+
+  #stopTestBtn {
+      position: absolute; 
+      top: 15px; 
+      right: 5%; 
+      z-index: 200;
+      background: #d43a3a; color: white; padding: 12px 24px;
+      font-weight: bold; border-radius: 8px; border: 2px solid #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: none; cursor: pointer;
+      font-size: 14px;
+  }
+  #stopTestBtn:hover { transform: scale(1.05); }

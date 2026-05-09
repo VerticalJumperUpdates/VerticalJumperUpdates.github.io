@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Vertical Jumper 1.16</title>
+
+<link rel="stylesheet" href="css/Grundeinstellungen.css">
+<link rel="stylesheet" href="css/Spielfeldlayout.css">
+<link rel="stylesheet" href="css/HUD.css">
+<link rel="stylesheet" href="css/StopTest.css">
+<link rel="stylesheet" href="css/Menu.css">
+<link rel="stylesheet" href="css/EditorUI.css">
+<link rel="stylesheet" href="css/Overlay.css">
+<link rel="stylesheet" href="css/Modals.css">
+<link rel="stylesheet" href="css/Skins.css">
+<link rel="stylesheet" href="css/StatsModal.css"> 
+<link rel="stylesheet" href="css/Challenges.css"> 
+<link rel="stylesheet" href="css/Titles.css">
+<link rel="stylesheet" href="css/LavaShop.css">
+<link rel="stylesheet" href="css/Extras.css">
+<link rel="stylesheet" href="css/Extras2.css">
+<link rel="stylesheet" href="css/FailScreen.css">
+<link rel="stylesheet" href="css/EggHUD.css">
+<link rel="stylesheet" href="css/EggCapture.css">
+<link rel="stylesheet" href="css/EggUnlock.css">
+
+</head>
+<body>
+<div id="game-wrap">
+    <canvas id="game" width="1720" height="900" aria-label="Spiel"></canvas>
+    <div id="coin-anim-container"></div>
+    
+    <button id="stopTestBtn">Test beenden</button>
+
+    <!-- EASTER EGG: KEY HUD (top right) -->
+    <div id="keyHud">
+      <!-- Slot 0 = blau, Slot 1 = grün, Slot 2 = rot (klickbar) -->
+      <div class="key-slot clickable" id="keySlot0" title="Blaue Challenge starten"></div>
+      <div class="key-slot" id="keySlot1" title="Grüner Schlüssel"></div>
+      <div class="key-slot clickable" id="keySlot2" title="Roter Schlüssel – klicken!"></div>
+    </div>
+
+    <div class="hud" role="status" aria-live="polite">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="min-width:120px">
+          <div class="label">Highscore</div>
+          <div id="highscore" class="score">0</div>
+        </div>
+        <div style="min-width:120px">
+          <div class="label">Score</div>
+          <div id="score" class="score">0</div>
+          <div id="hudCoinDisplay" class="coin-display">
+            <div id="hudCoinIcon" class="coin-icon"></div>
+            <span id="coinCountHUD">0</span>
+          </div>
+        </div>
+      </div>
+      <div style="height:8px"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button id="openSkinsHUD" title="Skins">Skins</button>
+      </div>
+      <div id="challengeHud" style="display:none; margin-top:10px; background:#111; color:white; padding:4px 8px; border-radius:4px; font-size:12px;">
+         Challenge / Custom Modus
+      </div>
+      <div id="editorHudInfo" style="display:none; margin-top:10px; background:#3b82f6; color:white; padding:4px 8px; border-radius:4px; font-size:14px; font-weight:bold;">
+         EDITOR MODUS
+      </div>
+    </div>
+
+    <div id="menu" class="menu" aria-hidden="false">
+      <h1>Vertical Jumper</h1>
+      <div id="activeTitleDisplay"></div>
+      
+      <div class="menu-row">
+        <button id="startBtn">Spiel Starten</button>
+        <button id="multiplayerBtn">2 Spieler: AUS</button>
+      </div>
+      <div class="menu-row">
+          <button id="openChallengeMenuBtn" style="background:#2ecc71">Challenges</button>
+      </div>
+      <div class="menu-row">
+        <button id="openEditorBtn" style="background:#333; border: 2px solid #999;">Level Editor</button>
+      </div>
+      <div class="menu-row">
+        <button id="openSkinsMain" class="secondary">Skins ansehen</button>
+        <button id="openTitlesBtn" class="secondary" style="background:#a64eff">Titel</button>
+      </div>
+      <div class="menu-row" style="margin-top:8px">
+          <button id="openLavaShopBtn" style="display:none">Lava Shop</button>
+      </div>
+
+      <p>S1: Pfeiltasten | S2: AWD</p>
+      <div class="menu-row" id="menuButtonsRow">
+        <button id="devBtn" style="display:none">Dev-Mode</button>
+        <button id="lavaModeBtn" style="display:none">Lava-Modus: AUS</button>
+        <button id="iceModeBtn">Ice-Mode: AUS</button>
+        <button id="resetBtn" style="background:#b33">Reset</button>
+      </div>
+
+      <div class="menu-row" id="devOnlyRow" style="display:none;margin-top:6px">
+        <button id="openStatsBtn" style="background:#6b6cff">Stats</button>
+        <button id="devAddCoins" class="btn-small">+50 Gold</button>
+        <button id="devAddLavaCoins" class="btn-small" style="background:#b00">+50 Lava</button>
+      </div>
+
+      <div class="menu-foot"></div>
+      <button id="openCodeModalBtn" class="code-btn">Geschenk Code / Level laden</button>
+    </div>
+
+    <div id="editorUI" class="editor-ui">
+        <h3>Level Editor</h3>
+        <p style="font-size:11px; color:#666; margin-bottom:15px;">Mausrad: Scrollen | Klick: Auswählen</p>
+        
+        <div class="editor-group">
+            <span class="editor-label">Neues Objekt</span>
+            <button id="edAddPlat" class="editor-btn primary">+ Plattform hinzufügen</button>
+        </div>
+
+        <div id="edSelectedProps" style="display:none;">
+            <div class="editor-group">
+                <span class="editor-label">Typ</span>
+                <div class="type-btn-row">
+                    <div class="type-btn" data-type="green" style="background:#3fa13f" title="Normal"></div>
+                    <div class="type-btn" data-type="blue" style="background:#3a6ff7" title="Beweglich"></div>
+                    <div class="type-btn" data-type="orange" style="background:#ff9c3b" title="Zerbrechlich"></div>
+                    <div class="type-btn" data-type="gold" style="background:#ffd700" title="Ziel"></div>
+                </div>
+            </div>
+            
+            <div class="editor-group" id="edSpeedGroup" style="display:none;">
+                <span class="editor-label">Geschwindigkeit: <span id="edValSpeed"></span></span>
+                <input type="range" id="edInSpeed" class="editor-input" min="0" max="400" step="10">
+            </div>
+
+            <div class="editor-group">
+                <span class="editor-label">Breite: <span id="edValW"></span></span>
+                <input type="range" id="edInW" class="editor-input" min="20" max="600" step="10">
+                
+                <span class="editor-label">Höhe (Y): <span id="edValY"></span></span>
+                <input type="number" id="edInY" class="editor-input" step="10">
+                
+                <span class="editor-label">X Position: <span id="edValX"></span></span>
+                <input type="range" id="edInX" class="editor-input" min="0" max="1720" step="10">
+            </div>
+
+            <div class="editor-group">
+                <button id="edDeletePlat" class="editor-btn danger">Entfernen</button>
+            </div>
+        </div>
+        
+        <div style="margin-top:auto; margin-bottom: 40px;">
+             <button id="edTestLevel" class="editor-btn success">▶ TESTEN</button>
+             <button id="edCopyCode" class="editor-btn">Code kopieren</button>
+             <button id="edExit" class="editor-btn danger" style="margin-top:10px">Verlassen</button>
+        </div>
+    </div>
+
+    <div id="failOverlay" class="fail-overlay">
+        <h2>Challenge fehlgeschlagen</h2>
+        <button id="retryChallengeBtn" class="btn-retry">Nochmal versuchen</button>
+        <button id="exitChallengeBtn" class="btn-menu">Hauptmenü</button>
+    </div>
+
+    <div id="codeModal" class="code-modal">
+        <h2 style="margin-top:0;color:#103">Code Eingabe</h2>
+        <p style="font-size:14px; font-weight:bold;">Geschenk- oder Levelcode eingeben:</p>
+        <input type="text" id="codeInputField" class="code-input" placeholder="CODE / VJLVL-...">
+        <div style="display:flex; gap:10px; width:100%; justify-content:center; margin-top:10px;">
+             <button id="cancelCodeBtn" style="background:#ccc; color:#333; margin:0;">Abbrechen</button>
+             <button id="submitCodeBtn" style="background:var(--accent); color:#fff; margin:0;">Einlösen / Laden</button>
+        </div>
+    </div>
+
+    <div id="challengeModal" class="challenge-modal" style="display:none">
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 style="margin:0;color:#103">Challenges</h2>
+            <button id="closeChallengeModal" class="btn-small btn-ghost" style="color:#666">Schliessen</button>
+        </div>
+        <div class="challenge-tabs">
+            <button class="challenge-tab active" data-diff="easy">Leicht</button>
+            <button class="challenge-tab" data-diff="medium">Mittel</button>
+            <button class="challenge-tab" data-diff="hard">Schwer</button>
+            <button class="challenge-tab" data-diff="impossible">Unmöglich</button>
+            <button class="challenge-tab" data-diff="training">Das Biest Übung</button>
+            <button class="challenge-tab" data-diff="bonus" id="bonusTab" style="display:none; background:#ffd700; color:#000;">Bonus</button>
+        </div>
+        <div id="challengeList" class="challenge-list"></div>
+    </div>
+
+    <div id="titleModal" class="title-modal" style="display:none">
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 style="margin:0;color:#103">Titel</h2>
+            <button id="closeTitleModal" class="btn-small btn-ghost" style="color:#666">Schliessen</button>
+        </div>
+        <div id="titleList" class="title-list"></div>
+    </div>
+
+    <div id="skinModal" class="skin-modal" style="display:none" role="dialog" aria-modal="true">
+      <div style="width:100%;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h2 style="margin:0;color:#103">Skins</h2>
+          <div class="coin-display" style="margin-top:4px">
+            <div class="coin-icon"></div>
+            <span id="skinCoinCount">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="skin-grid" id="skinGrid"></div>
+      <div style="width:100%;display:flex;justify-content:flex-end;margin-top:12px;">
+        <button id="closeSkinModal" class="btn-small btn-ghost">Schliessen</button>
+      </div>
+    </div>
+
+    <div id="lavaShopModal" class="lava-shop-modal" style="display:none">
+        <div class="lava-shop-header">
+            <div>
+                <h2 style="margin:0;color:#800000">Lava Shop</h2>
+                <div style="font-size:13px;color:#666">Öffne Kisten für exklusive Skins!</div>
+            </div>
+            <div style="display:flex; align-items:center;">
+                <div class="coin-display red-mode">
+                    <div class="coin-icon red"></div>
+                    <span id="lavaShopCoinCount">0</span>
+                </div>
+                <div id="lavaSkinCounter" class="collection-counter" title="Gesammelte Lava-Skins">0 / 5</div>
+            </div>
+        </div>
+        <div class="chest-stage">
+            <div id="chestElement" class="chest-box"></div>
+            <div id="rewardReveal" class="reward-reveal">
+                <div style="margin-bottom:10px; font-weight:bold; color:#111; background:#fff; padding:4px 10px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">Neuer Skin!</div>
+                <div id="rewardThumbContainer"></div>
+                <div id="rewardName" style="font-size:20px; font-weight:800; margin-top:8px; text-shadow:0 2px 0 #fff;">Skin Name</div>
+                <div id="rewardRarity" class="rarity-tag" style="background:#eee; color:#555;">Gewöhnlich</div>
+                <div id="duplicateMsg" style="color:#b00; font-size:12px; margin-top:5px; display:none;">Duplikat! +5 Lava Coins</div>
+                <button id="resetChestBtn" style="display:none; margin-top:20px; background:#444; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer;">Weiter</button>
+            </div>
+            <button id="buyChestBtn" class="chest-price-btn">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span>Kiste öffnen</span>
+                    <div style="display:flex; align-items:center; background:rgba(0,0,0,0.2); padding:2px 8px; border-radius:12px;">
+                        <div class="coin-icon red" style="width:14px;height:14px;border-color:white;"></div>
+                        <span style="font-size:0.9em; margin-left:4px;">10</span>
+                    </div>
+                </div>
+            </button>
+        </div>
+        <div style="width:100%;display:flex;justify-content:flex-end;margin-top:auto;">
+            <button id="closeLavaShop" class="btn-small btn-ghost" style="color:#800000">Verlassen</button>
+        </div>
+    </div>
+
+    <div id="statsModal" class="stats-modal" style="display:none" role="dialog" aria-modal="true">
+      <div class="stats-header">
+        <h2 style="margin:0;color:#103">Stats</h2>
+        <button id="closeStats" class="btn-small btn-ghost">Schliessen</button>
+      </div>
+      <div class="stats-row" id="statsOverview" style="margin-top:12px"></div>
+    </div>
+
+    <div id="toast">Freigeschaltet!</div>
+
+    <div id="passwordOverlay" class="overlay" style="display:none">
+      <div class="dialog" role="dialog" aria-modal="true">
+        <div style="font-weight:700">Dev-Passwort</div>
+        <input id="devPasswordInput" type="password" placeholder="Passwort" />
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button id="cancelPassword" class="btn-ghost">Abbrechen</button>
+          <button id="submitPassword" class="btn-small">Bestätigen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NORMALE CREDITS (Score ≥ 2000) -->
+    <div id="creditScreen">
+      <div id="creditContent">
+        <div class="credit-section">
+          <h2>GLÜCKWUNSCH!</h2>
+          <p>Du hast einen Score von über 2000 erreicht und somit auch die Credits.</p>
+        </div>
+        <div class="credit-section">
+          <h2>PRODUKTION</h2>
+          <h2>Developer</h2>
+          <p>Balázs, Damel und Max</p>
+          <h2>Ideen</h2>
+          <p>Paul, Ronja, Johannes, Chiara, Leon, Luis, Dávid, Aurora, Laura, Ezra</p>
+        </div>
+        <div class="credit-section">
+          <h2>DANKSAGUNG</h2>
+          <p>Vielen Dank an alle Spieler!</p>
+          <p>Besonderer Dank geht an die Tester.</p>
+        </div>
+        <div class="credit-section">
+          <p>Weitere Spielversionen sind schon in Entwicklung...</p>
+        </div>
+        <div class="credit-section">
+          <p>Unterstützt durch ChatGPT und Gemini AI</p>
+        </div>
+        <div class="credit-section" style="margin-top: 100px;">
+          <p>Gleich geht es weiter...</p>
+        </div>
+        <div class="credit-section" style="margin-top: 100px;">
+          <p>Ganz normal...</p>
+        </div>
+        <div class="credit-section" style="margin-top: 100px;">
+          <p>Genau so wie vorher...</p>
+        </div>
+        <div class="credit-section" style="margin-top: 100px;">
+          <p>Oder?</p>
+          <div class="credit-section" style="margin-top: 100px;">
+            <q>Fortsetzung folgt...</q>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRUE CREDITS (alle Schlüssel gefunden) -->
+    <div id="trueCreditScreen">
+      <div id="trueCreditContent">
+        <div class="credit-section" style="margin-top:80px;">
+          <h2 style="font-size:2.5rem; letter-spacing:6px;">Vertical Jumper</h2>
+        </div>
+        <div class="credit-section">
+          <p style="font-size:1.5rem; font-weight:900; color:#3b82f6;">Du hast alle Schlüssel erhalten</p>
+          <p style="font-size:1.8rem; color:var(--gold); font-weight:900;">Gratulation!</p>
+          <p style="margin-top:20px;">Wir hoffen du hattest Spass</p>
+          <p>mit Vertical Jumper</p>
+        </div>
+        <div class="credit-section" style="margin-top:100px;">
+          <h2>Spezielle Danksagung</h2>
+          <p style="font-weight:700; color:#aaa; font-size:0.9rem; letter-spacing:2px;">KI's</p>
+          <p>Gemini</p>
+          <p>ChatGPT</p>
+          <p>Claude</p>
+          <p>Replit</p>
+        </div>
+        <div class="credit-section">
+          <p style="font-weight:700; color:#aaa; font-size:0.9rem; letter-spacing:2px;">Ideen</p>
+          <p>Paul</p>
+          <p>Ronja</p>
+          <p>Johannes</p>
+          <p>Chiara</p>
+          <p>Leon</p>
+          <p>Luis</p>
+          <p>Dávid</p>
+          <p>Aurora</p>
+          <p>Laura</p>
+          <p>Ezra</p>
+          <p style="margin-top:16px; font-style:italic; color:#ccc;">Und natürlich an ALLE Spieler</p>
+        </div>
+        <div class="credit-section" style="margin-top:120px;">
+          <p style="font-style:italic; color:#aaa;">Weitere Versionen sind schon in Entwicklung...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EASTER EGG: KEY CAPTURE OVERLAY -->
+    <div id="keyCaptureOverlay">
+      <h2 id="keyCaptureTitle">Schlüssel erhalten</h2>
+      <svg id="keyCaptureKeyImg" viewBox="0 0 60 110" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="30" cy="26" r="22" fill="#555" stroke="#222" stroke-width="3"/>
+        <circle cx="30" cy="26" r="12" fill="white"/>
+        <rect x="26" y="46" width="8" height="44" rx="3" fill="#555" stroke="#222" stroke-width="2"/>
+        <rect x="34" y="62" width="10" height="7" rx="2" fill="#555" stroke="#222" stroke-width="2"/>
+        <rect x="34" y="76" width="8" height="6" rx="2" fill="#555" stroke="#222" stroke-width="2"/>
+      </svg>
+      <button class="back-btn" id="keyCaptureBackBtn">Zurück zum Hauptmenu</button>
+    </div>
+
+    <!-- EASTER EGG: ALL KEYS OVERLAY -->
+    <div id="allKeysOverlay">
+      <h1>Neuer Titel freigeschaltet!</h1>
+      <h2>"Ei"</h2>
+      <p>Du hast alle drei Schlüssel gefunden.</p>
+      <p style="color:#aaa; font-size:0.9rem;">Der Titel ist jetzt im Titel-Menü verfügbar.</p>
+      <div class="keys-row" id="allKeysRow"></div>
+      <button class="back-btn" id="allKeysBackBtn">True Credits ansehen</button>
+    </div>
+
+    <!-- EASTER EGG: Blue Level loading bar -->
+    <div id="eeBlueLoader" style="display:none; position:fixed; inset:0; z-index:400; background:linear-gradient(135deg,#80deea 0%,#26c6da 100%); flex-direction:column; align-items:center; justify-content:center; font-family:inherit;">
+      <div style="color:#fff; font-size:26px; font-weight:800; letter-spacing:1px; margin-bottom:30px; text-shadow:0 2px 8px rgba(0,0,0,0.25);">Lade Horizontal Jumper&hellip;</div>
+      <div style="width:340px; height:16px; background:rgba(255,255,255,0.3); border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.18);">
+        <div id="eeBlueLoaderBar" style="width:0%; height:100%; background:#fff; border-radius:8px; transition:none;"></div>
+      </div>
+    </div>
+
+</div>
+
+
+<script src="js/Konstanten.js"></script>
+<script src="js/Keys.js"></script>
+<script src="js/Challenges.js"></script>
+<script src="js/Titel.js"></script>
+<script src="js/Canvas.js"></script>
+<script src="js/Player.js"></script>
+<script src="js/Coin.js"></script>
+<script src="js/PNG.js"></script>
+<script src="js/SkinsList.js"></script>
+<script src="js/ModeButtons.js"></script>
+<script src="js/Drawing.js"></script>
+<script src="js/Logic.js"></script>
+<script src="js/Egg.js"></script>
+<script src="js/Editor.js"></script>
+<script src="js/Ice.js"></script>
+<script src="js/Update.js"></script>
+<script src="js/SetupListeners.js"></script>
+<script src="js/Egg2.js"></script>
+<script src="js/Init.js"></script>
+
+</body>
+</html>

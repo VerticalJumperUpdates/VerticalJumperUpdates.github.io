@@ -1,0 +1,21 @@
+  .lava-shop-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+  .collection-counter { background: #800000; color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 12px; font-size: 14px; margin-left: 10px; border: 1px solid #ff4444; }
+  .chest-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 300px; position: relative; }
+  .chest-box { width: 120px; height: 100px; background: linear-gradient(#8B4513, #5c2e0d); border: 4px solid #3e1e05; border-radius: 12px; position: relative; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.3); transition: transform 0.2s; }
+  .chest-box::before { content: ''; position: absolute; top: 35px; left: 0; right: 0; height: 6px; background: #331802; z-index: 2; }
+  .chest-box::after { content: ''; position: absolute; top: 28px; left: 50%; transform: translateX(-50%); width: 16px; height: 20px; background: gold; border: 2px solid #b8860b; border-radius: 4px; z-index: 3; }
+  .chest-box:hover { transform: scale(1.05); }
+  .chest-box.shake { animation: shakeChest 0.8s ease-in-out both; }
+  .chest-box.open { animation: openChestAnim 0.5s forwards; }
+  .chest-box.hidden { display: none; } 
+  @keyframes shakeChest { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-8px) rotate(-5deg); } 20%, 40%, 60%, 80% { transform: translateX(8px) rotate(5deg); } }
+  @keyframes openChestAnim { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2) translateY(-20px); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+  .reward-reveal { position: relative; display: none; flex-direction: column; align-items: center; z-index: 100; opacity: 0; margin-top: 20px; }
+  .reward-reveal.show { display: flex; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+  @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .chest-price-btn { background: #b50000; font-size: 1.2rem; padding: 15px 30px; border: 3px solid #ff6666; box-shadow: 0 6px 0 #7a0000; transition: all 0.1s; margin-top: 30px; color: white; border-radius: 8px; cursor: pointer; }
+  .chest-price-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #7a0000; }
+  .chest-price-btn:disabled { background: #555; border-color: #777; box-shadow: none; transform: none; cursor: not-allowed; }
+  .rarity-tag { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 4px; }
+
+  #toast { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); padding: 8px 12px; background: #103; color: #fff; border-radius: 8px; z-index: 2500; display: none; }

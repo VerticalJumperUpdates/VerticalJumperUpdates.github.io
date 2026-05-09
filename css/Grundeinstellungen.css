@@ -1,0 +1,28 @@
+:root {
+    --bg0: #eaf6ff;
+    --bg1: #87CEEB;
+    --accent: #3b82f6;
+    --ui-text: #123;
+    --gold: #ffcf40;
+    --lava-coin: #ff4444; 
+    --lava-deep: #4a0000;
+    --lava-bright: #ff4500;
+  }
+  
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
+    background: linear-gradient(var(--bg1), var(--bg0));
+    overflow: hidden;
+    transition: background 0.5s ease;
+    user-select: none;
+  }
+  
+  body.lava-bg {
+    background: linear-gradient(var(--lava-deep), var(--lava-bright)) !important;
+  }
+
+  body.ice-bg {
+    background: linear-gradient(to bottom, #f8f9ff, #e8f0ff) !important;
+  }

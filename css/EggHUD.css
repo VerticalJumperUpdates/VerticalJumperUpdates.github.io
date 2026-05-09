@@ -1,0 +1,11 @@
+  #keyHud {
+    position: absolute; top: 14px; right: 110px; z-index: 150;
+    background: rgba(0,0,0,0.18); border-radius: 12px;
+    padding: 7px 10px; display: flex; gap: 10px; align-items: center;
+    border: 1px solid rgba(255,255,255,0.25);
+    pointer-events: auto;
+  }
+  .key-slot { width: 22px; height: 38px; position: relative; transition: transform 0.15s; }
+  .key-slot:hover { transform: scale(1.18); }
+  .key-slot.clickable { cursor: pointer; }
+  .key-slot svg { width: 22px; height: 38px; display: block; }

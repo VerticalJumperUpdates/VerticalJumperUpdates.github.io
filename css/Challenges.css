@@ -1,0 +1,10 @@
+  .challenge-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+  .challenge-tab { padding: 8px 16px; border-radius: 20px; background: #eee; border: none; font-weight: bold; cursor: pointer; opacity: 0.6; }
+  .challenge-tab.active { background: var(--accent); color: white; opacity: 1; }
+  .challenge-list { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 500px; }
+  .challenge-item { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: transform 0.1s; }
+  .challenge-item:hover { transform: scale(1.02); border-color: var(--accent); }
+  .challenge-item h3 { margin: 0; font-size: 16px; }
+  .challenge-item p { margin: 4px 0 0 0; font-size: 12px; color: #666; }
+  .challenge-check { color: #2ecc71; font-weight: 900; font-size: 20px; margin-right: 10px; display:none; }
+  .challenge-item.completed .challenge-check { display: block; }

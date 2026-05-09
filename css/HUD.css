@@ -1,0 +1,27 @@
+  .hud { position: absolute; top: 10px; left: 18px; z-index: 60; color: var(--ui-text); text-align: left; min-width: 260px; pointer-events: none; }
+  .hud * { pointer-events: auto; }
+  .hud .label { font-size: 12px; opacity: 0.8; }
+  .hud .score { font-weight: 800; font-size: 18px; }
+  
+  .coin-display {
+    display: flex; align-items: center; gap: 6px; 
+    background: rgba(255,255,255,0.6); padding: 4px 10px; 
+    border-radius: 20px; width: fit-content; margin-top: 6px;
+    font-weight: 800; color: #b58900; 
+    border: 1px solid rgba(255,215,0,0.3);
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .coin-display.red-mode { color: #b50000; border-color: rgba(255, 68, 68, 0.4); background: rgba(255, 230, 230, 0.7); }
+  .coin-icon { width: 16px; height: 16px; background: var(--gold); border-radius: 50%; border: 2px solid #da9100; box-shadow: 0 1px 0 rgba(0,0,0,0.1); flex-shrink: 0; transition: background 0.3s, border-color 0.3s; }
+  .coin-icon.red { background: var(--lava-coin); border-color: #a80000; }
+
+  #coin-anim-container { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 100; pointer-events: none; }
+  .coin-fly-up {
+    position: absolute; left: 50%; transform: translateX(-50%); color: #da9100;
+    font-weight: 900; font-size: 24px; text-shadow: 1px 1px 0 white;
+    animation: flyUp 1.2s ease-out forwards; display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  }
+  .coin-fly-up.red { color: #cc0000; }
+  @keyframes flyUp { 0% { transform: translate(-50%, 0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(-50%, -80px); opacity: 0; } }
+
+  .hud button { margin-top: 8px; padding: 6px 10px; border-radius: 8px; border: none; background: #111; color: #fff; cursor: pointer; }
