@@ -1618,13 +1618,12 @@ function buildBlueLevel() {
     const plats = [];
     const layout = [
         { dx:  320, dy:   0 }, 
-	{ dx: 990, dy:  90 }, 	
+		{ dx: 990, dy:  90 }, 	
         { dx: 1560, dy:  50 }, 
         { dx: 2100, dy: -60 }, 
-	{ dx: 2670, dy:  -30 },
+		{ dx: 2670, dy:  -30 },
         { dx: 3300, dy:  -60 },
-	
-	{ dx: 4090, dy:  85 },
+		{ dx: 4090, dy:  85 },
     ];
     for (const pos of layout) {
         plats.push({ x: pos.dx, y: baseY + pos.dy, w: 160, type: 'orange' });
@@ -1656,15 +1655,15 @@ function buildDeepLevel() {
     // Non-tief skins: no camera follow → fall off screen → die normally.
     // Tief skin: camera follows downward, no death → can reach the gold.
     const cx = Math.round(state.width / 2) - 100;
-    const baseY = 100; // start platform y (set by startChallenge for ee_red)
-    const gap = 150;
+    const baseY = -230; // start platform y (set by startChallenge for ee_red)
+    const gap = -150;
     const plats = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 2000; i++) {
         const side = i % 2 === 0 ? -70 : 80;
-        plats.push({ x: cx + side, y: baseY + 150 + i * gap, w: 200, type: 'green' });
+        plats.push({ x: cx + side, y: baseY + 150 + i * gap, w: 80, type: 'blue', speed: 60 });
     }
     // Gold at depth 2000 from start (score = -200)
-    plats.push({ x: cx, y: baseY + 2000, w: 240, type: 'gold' });
+    plats.push({ x: cx, y: baseY + 2000, w: 40, type: 'gold' });
     return plats;
 }
 
